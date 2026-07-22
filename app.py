@@ -16,11 +16,12 @@ st.set_page_config(
 )
 
 # --- 用紙サイズの定義 (単位: mm, 余白を除いた目安の印刷可能エリア) ---
+# ※excel_code には Excel標準の用紙サイズID（文字列）を指定してエラーを回避
 PAPER_SIZES_MM = {
-    "A4": {"width": 180.0, "height": 260.0, "excel_code": openpyxl.worksheet.page.PageSetup.PAPERSIZE_A4},
-    "A3": {"width": 260.0, "height": 380.0, "excel_code": openpyxl.worksheet.page.PageSetup.PAPERSIZE_A3},
-    "B5": {"width": 150.0, "height": 220.0, "excel_code": openpyxl.worksheet.page.PageSetup.PAPERSIZE_B5},
-    "B4": {"width": 220.0, "height": 330.0, "excel_code": openpyxl.worksheet.page.PageSetup.PAPERSIZE_B4_ISO},
+    "A4": {"width": 180.0, "height": 260.0, "excel_code": "9"},   # 9 = A4
+    "A3": {"width": 260.0, "height": 380.0, "excel_code": "8"},   # 8 = A3
+    "B5": {"width": 150.0, "height": 220.0, "excel_code": "13"},  # 13 = B5
+    "B4": {"width": 220.0, "height": 330.0, "excel_code": "12"},  # 12 = B4
 }
 
 # --- 便利関数 ---
@@ -118,7 +119,7 @@ def create_mosaic_sheets_from_colors(
     tile_width_mm = printable_width_mm / (tiles_per_sheet_horizontal + 1.2)
     tile_height_mm = printable_height_mm / (tiles_per_sheet_vertical + 1.2)
 
-    # mm -> Excel単位に換算 (概算)
+    # mm -> Excel単位に換算
     excel_col_width = max(tile_width_mm / 1.8, 3.0)
     excel_row_height = max(tile_height_mm * 2.83, 12.0)
 
@@ -161,7 +162,7 @@ def create_mosaic_sheets_from_colors(
             ws = wb.active
             ws.title = f"指示書_行{row_sheet_idx+1}_列{col_sheet_idx+1}"
 
-            # ページ印刷設定（用紙サイズと向き、1ページ自動適合）
+            # ページ印刷設定（用紙サイズIDと向き、1ページ自動適合）
             ws.page_setup.paperSize = selected_paper["excel_code"]
             if paper_orientation == "ヨコ":
                 ws.page_setup.orientation = ws.ORIENTATION_LANDSCAPE
