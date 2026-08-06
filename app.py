@@ -304,39 +304,48 @@ if st.button("🚀 モザイクアートを生成", type="primary", use_containe
 # 結果表示エリア
 if "full_mosaic" in st.session_state:
     st.subheader("🖼️ 生成結果")
-    # 修正点：use_column_width=True を use_container_width=True に変更
     st.image(st.session_state["full_mosaic"], caption="モザイクアート全体像", use_container_width=True)
 
     col_dl1, col_dl2 = st.columns(2)
     
     with col_dl1:
-        with open(st.session_state["img_zip"], "rb") as f:
-            st.download_button(
-                label="📦 全てのシート画像をZIPでダウンロード",
-                data=f,
-                file_name="mosaic_sheets_images.zip",
-                mime="application/zip",
-                use_container_width=True
-            )
+        if "img_zip" in st.session_state and os.path.exists(st.session_state["img_zip"]):
+            with open(st.session_state["img_zip"], "rb") as f:
+                st.download_button(
+                    label="📦 全てのシート画像をZIPでダウンロード",
+                    data=f,
+                    file_name="mosaic_sheets_images.zip",
+                    mime="application/zip",
+                    use_container_width=True
+                )
+        else:
+            st.warning("画像ZIPファイルが見つかりません。もう一度「モザイクアートを生成」を押してください。")
 
     with col_dl2:
-        with open(st.session_state["excel_zip"], "rb") as f:
-            st.download_button(
-                label="📄 全てのExcel色指示書をZIPでダウンロード",
-                data=f,
-                file_name="mosaic_sheets_excels.zip",
-                mime="application/zip",
-                use_container_width=True
-            )
+        if "excel_zip" in st.session_state and os.path.exists(st.session_state["excel_zip"]):
+            with open(st.session_state["excel_zip"], "rb") as f:
+                st.download_button(
+                    label="📄 全てのExcel色指示書をZIPでダウンロード",
+                    data=f,
+                    file_name="mosaic_sheets_excels.zip",
+                    mime="application/zip",
+                    use_container_width=True
+                )
+        else:
+            st.warning("ExcelZIPファイルが見つかりません。もう一度「モザイクアートを生成」を押してください。")
 
     st.markdown("---")
     st.subheader("📊 各シートの色指示表プレビュー")
     
-    excel_paths = st.session_state["excel_paths"]
-    excel_names = [os.path.basename(p) for p in excel_paths]
-    selected_excel_name = st.selectbox("表示するシートの指示書を選択", excel_names)
+    if "excel_paths" in st.session_state:
+        excel_paths = st.session_state["excel_paths"]
+        excel_names = [os.path.basename(p) for p in excel_paths]
+        selected_excel_name = st.selectbox("表示するシートの指示書を選択", excel_names)
 
-    if selected_excel_name:
-        selected_path = next(p for p in excel_paths if os.path.basename(p) == selected_excel_name)
-        df = pd.read_excel(selected_path)
-        st.dataframe(df, use_container_width=True)
+        if selected_excel_name:
+            selected_path = next((p for p in excel_paths if os.path.basename(p) == selected_excel_name), None)
+            if selected_path and os.path.exists(selected_path):
+                df = pd.read_excel(selected_path)
+                st.dataframe(df, use_container_width=True)
+            else:
+                st.warning("選択されたExcelファイルが見つかりません。もう一度モザイクアートを生成してください。")
