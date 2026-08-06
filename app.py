@@ -304,7 +304,8 @@ if st.button("🚀 モザイクアートを生成", type="primary", use_containe
 # 結果表示エリア
 if "full_mosaic" in st.session_state:
     st.subheader("🖼️ 生成結果")
-    st.image(st.session_state["full_mosaic"], caption="モザイクアート全体像", use_column_width=True)
+    # 修正点：use_column_width=True を use_container_width=True に変更
+    st.image(st.session_state["full_mosaic"], caption="モザイクアート全体像", use_container_width=True)
 
     col_dl1, col_dl2 = st.columns(2)
     
